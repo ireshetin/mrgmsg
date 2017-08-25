@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
+
+	"./models/user"
 )
 
-var user = person{id: 0, name: "", password: ""}
+//var user = person{id: 0, name: "", password: ""}
 
 type authData struct {
 	userName     string
@@ -28,7 +30,7 @@ func main() {
 		command = getCommand("Введите команду (help)")
 		result, code = processCommand(command)
 
-		if (code > 0) {
+		if code > 0 {
 			consoleLog("some error")
 		}
 	}
@@ -75,7 +77,7 @@ func processCommand(command string) (bool, int) {
 		break
 
 	case "register":
-		var authdata authData;
+		var authdata authData
 		authdata, code := processRegister()
 		if code > 0 {
 			consoleLog("Ошибка")

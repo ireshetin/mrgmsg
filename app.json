@@ -1,0 +1,15 @@
+{
+  "app": {
+    "common": {
+      "param_a": "AAAA",
+      "param_b": "BBBB"
+    },
+    "db": {
+      "user": "root",
+      "passwd": "root",
+      "net": "tcp",
+      "addr": "127.0.0.1:3306",
+      "dbname": "msg"
+    }
+  }
+}
