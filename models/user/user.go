@@ -4,12 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type (
 	//User описывает модель пользователя системы
 	User struct {
-		Id       *int64
+		Id       *int
 		Login    *string
 		Password *string //There is no in db. Use only for check/set password
 		Name     *string
@@ -21,7 +23,7 @@ type (
 const AllFields = "id, login, name, last_name"
 
 func (u *User) allocateMem() {
-	u.Id = new(int64)
+	u.Id = new(int)
 	u.Login = new(string)
 	u.Password = new(string)
 	u.Name = new(string)

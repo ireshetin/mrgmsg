@@ -8,6 +8,8 @@ import (
 	"log"
 	"strconv"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 //Create добавляет нового пользователя в БД
@@ -19,13 +21,14 @@ func (_ *User) AddUser(user User, ok *bool) error {
 		return errs[0]
 	}
 	*ok = false
-	con, err := sql.Open("mysql", "root:1234@tcp(localhost:32771)/msg")
+	con, err := sql.Open("mysql", "root:1234@tcp(127.0.0.1:32771)/msg")
 	if err != nil {
 		log.Fatalf("Failed to open connection: %v", err)
 	}
 	if con == nil {
 		log.Fatalf("User: Connection is nil")
 	}
+
 	row, err := con.Query(fmt.Sprintf("SELECT id,login,name,last_name FROM user WHERE login = ?"), *user.Login)
 	if err != nil {
 		return err
@@ -33,6 +36,7 @@ func (_ *User) AddUser(user User, ok *bool) error {
 	for row.Next() {
 		err = row.Scan(&user.Id, &user.Login, &user.Name, &user.LastName)
 	}
+
 	//смотрим, есть ли в базе юзер с таким логином
 	if user.Id != nil {
 		return nil
@@ -99,6 +103,7 @@ func (_ *User) GetUserByLogin(login string, user User) error {
 	//resp = *user
 	return nil
 }
+
 func (_ *User) GetUsersByChatId(chats []int64, users *[]int64) error {
 
 	var (
@@ -155,7 +160,7 @@ func (_ *User) CheckPassword(user User, ok *bool) error {
 	} else {
 		return fmt.Errorf("Set Id or login")
 	}
-	var key, salt string
+	var id, key, salt string
 
 	con, err := sql.Open("mysql", "root:1234@tcp(localhost:32771)/msg")
 	if err != nil {
@@ -164,14 +169,17 @@ func (_ *User) CheckPassword(user User, ok *bool) error {
 	if con == nil {
 		log.Fatalf("User: Connection is nil")
 	}
-	err = con.QueryRow(fmt.Sprintf("SELECT pwd_key, salt FROM user %s", where)).Scan(&key, &salt)
+	err = con.QueryRow(fmt.Sprintf("SELECT id, pwd_key, salt FROM user %s", where)).Scan(&user.Id, &key, &salt)
 	if err != nil {
 		return err
 	}
-	if !CheckPassword(*user.Password, salt, key) {
-		return fmt.Errorf("Wrong password!")
+
+	int_id, _ := strconv.Atoi(id)
+	if CheckPassword(*user.Password, salt, key) && int_id > 0 {
+		*ok = true
 	}
-	*ok = true
+	return fmt.Errorf("Wrong password!")
+
 	return nil
 }
 

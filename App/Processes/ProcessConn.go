@@ -36,7 +36,6 @@ func handleConn(conn net.Conn, sid string) error {
 		go func() {
 			transferData(conn, []byte("#"+sid+": Enter command: "))
 			reqLen, err := conn.Read(bufRead)
-			//QQLJK65zVhLdTde305P3yKkQh2kMCMH1EWfx5k6swzaoIg9CCH/WmTY72c4qNbBQxwDaVVkHVDZVQ9unvdsQlLaw8banOyhcLScr7F920k04bsyVGKKWsib6amY+1kaSbzQFnuWCPpZRkNW4PCQak7hSbdzCbW90lDN57PaJITfiQaqtyQmiP34572SLLymTypQj5RhCiLPx2Wv/8YiOChfFJqU+eBSHxjluVZOMjUOdixMfGct8Mt4KQQ0bEuUcyWE8hd8vCKNFFptq13RyUssyHhHNrjD2EiSPeLur/XffgAP2x0xX1Pe4agutx7pgWadotB8ULNaBmpsqOGbbwg==
 
 			buf, err = Helper.DecriptRSA(Helper.PrivateKey2048, string(bufRead[:reqLen]))
 
@@ -48,7 +47,7 @@ func handleConn(conn net.Conn, sid string) error {
 				fmt.Println("RSAAAAAAA-AAA-AAAaaaa =)")
 			}
 
-			fmt.Printf("'%s'", buf)
+			fmt.Printf("'%s' \n", buf)
 
 			promise <- tChanBufData{
 				buf: []byte(buf),
@@ -85,7 +84,7 @@ func handleConn(conn net.Conn, sid string) error {
 	return nil
 }
 
-// {"Command": "login", "Data": 1}
+// {"Command": "login", "Params": 1}
 
 func transferData(conn net.Conn, msg []byte) error {
 	if _, err := conn.Write(msg); err != nil {
@@ -95,4 +94,4 @@ func transferData(conn net.Conn, msg []byte) error {
 	return nil
 }
 
-// {"Command": "login", "Data": {"name":"vasya", "password":"qwerty"}}
+// {"Command": "login", "Params": {"name":"vasya", "password":"qwerty"}}

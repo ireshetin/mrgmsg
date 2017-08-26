@@ -11,7 +11,6 @@ import (
 	//"math/rand"
 	"./App"
 	//"./App/Helper"
-
 )
 
 func main() {

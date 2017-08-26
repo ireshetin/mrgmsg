@@ -11,13 +11,15 @@ import (
 
 	"encoding/json"
 
+	"./App/Helper"
+
 	"github.com/jroimartin/gocui"
 )
 
 type tParamsLoginStruct struct {
-	Username string
-	Password string
-	Icon     string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Icon     string `json:"icon"`
 }
 
 var data tParamsLoginStruct
@@ -205,6 +207,16 @@ func layoutLogon(g *gocui.Gui) error {
 		v.BgColor = gocui.ColorWhite
 		v.Title = "Friends"
 		// cсписок
+
+		var r tRequestClient
+
+		r.Command = "get_full_info"
+
+		r.Params.Id = 10
+		dataToSend, _ := json.Marshal(r)
+
+		sendToServer(dataToSend)
+
 		fmt.Fprintln(v, "Katya\nPetya\nSasha\nVasya\nNastya\nMasha\nVanya")
 
 	}
@@ -697,7 +709,17 @@ type tRequestLogin struct {
 	Params  tParamsLoginStruct `json:"params"`
 }
 
-func sendToServer(msg []byte) {
+type tRequestClient struct {
+	Command string        `json:"command"`
+	Params  tParamsClient `json:"params"`
+}
+
+type tParamsClient struct {
+	Id int
+}
+
+func sendToServer(dataToSend []byte) {
+	msg, _ := Helper.EncriptRSA(Helper.PublicKey2048, dataToSend)
 	fmt.Fprintf(network.conn, string(msg))
 }
 
@@ -731,12 +753,10 @@ var network Network
 
 func main() {
 
-	data.Password = "aaaaa"
-
 	network.conn, _ = net.Dial("tcp", "127.0.0.1:9001")
 
-	data.Username = "Vasya"
-	data.Password = "1234"
+	data.Username = "vova"
+	data.Password = "12345"
 	data.Icon = "༼ つ ◕_◕ ༽つ"
 
 	login()
